@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -g -Isrc/include
+CFLAGS=-Wall -g -Isrc/parser
 
 %: obj/lib.o obj/%.o 
 	$(CC) -o $@ $^
@@ -7,7 +7,7 @@ CFLAGS=-Wall -g -Isrc/include
 obj/%.o: src/%.c 
 	$(CC) $(CFLAGS) $^ -o $@ -c
 
-obj/lib.o: src/include/mylib.c directories 
+obj/lib.o: src/parser/parser.c directories 
 	$(CC) $(CFLAGS) $< -o $@ -c
 
 .PHONY: directories clean
