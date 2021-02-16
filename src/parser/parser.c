@@ -19,12 +19,11 @@ char* get_input()
 {
   char *buffer = (char *) malloc(MAX_LENGTH);
   memset(buffer, 0, MAX_LENGTH);
+  buffer[0] = '\n';
 
-  printf("\n> ");
-  fgets(buffer, MAX_LENGTH, stdin);
   while (buffer[0] == '\n') 
   {
-    printf("\n> ");
+    printf("> ");
     fgets(buffer, MAX_LENGTH, stdin);
   }
   buffer[strlen(buffer)-1] = '\0'; /* pour ne pas avoir un retour à la ligne */
