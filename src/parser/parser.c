@@ -14,10 +14,11 @@
  * get_input(): Permet de récupérer la saisie de l’utilisateur
  * @user_input: string où sera enregistrée l’entrée de l’utilisateur
  */
-void get_input(char *user_input)
+char* get_input()
 {
   char *buffer = (char *) malloc(MAX_LENGTH);
-  memset(user_input, 0, MAX_LENGTH);
+  memset(buffer, 0, MAX_LENGTH);
+
   printf("\n> ");
   fgets(buffer, MAX_LENGTH, stdin);
   while (buffer[0] == '\n') 
@@ -25,8 +26,8 @@ void get_input(char *user_input)
     printf("\n> ");
     fgets(buffer, MAX_LENGTH, stdin);
   }
-  strncpy(user_input, buffer, strlen(buffer)-1);
-  free(buffer);
+  buffer[strlen(buffer)-1] = '\0'; /* pour ne pas avoir un retour à la ligne */
+  return buffer;
 }
 
 /**
@@ -39,9 +40,7 @@ void get_input(char *user_input)
  */
 void parse_char(char *args[], char find)
 {
-  char *user_input = (char *) malloc(MAX_LENGTH);
-  get_input(user_input);
-
+  char *user_input = get_input();
   char *token = strtok(user_input, &find);
 
   int i = 0;

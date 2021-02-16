@@ -10,7 +10,7 @@
 
 #define MAX_LENGTH 200 /* taille maximum des tableaux utilisés */
 
-void get_input(char *user_input);
+char* get_input();
 void parse_char(char *args[], char find);
 void tok_space(char *args,char  *commands[]);
 
