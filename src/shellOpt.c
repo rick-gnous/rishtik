@@ -1,11 +1,16 @@
+/** 
+ * @file shellOpt.c
+ * @author rick <rick@gnous.eu>
+ * @date 2021
+ */
+
+#include "parser.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
-
-#include "parser.h"
-
 
 int main()
 {
@@ -49,17 +54,17 @@ int main()
 */
 
 
-    int index = 0;
+  int index = 0;
   while (strcmp(args[0], "exit"))
   {
-    if (args[1] != NULL)
+    while (args[index] != NULL)
     {
-      while (args[index] != NULL)
+      pid = fork();
+      if (!pid)
       {
-        pid = fork();
-        if (!pid)
+        tok_space(args[index], command);
+        if (args[1] != NULL) 
         {
-          tok_space(args[index], command);
           if (args[index+1] == NULL)
             dup2(my_pipe[0], STDIN_FILENO);
           else if (index == 0)
@@ -68,24 +73,24 @@ int main()
             dup2(my_pipe[0], STDIN_FILENO);
             dup2(my_pipe[1], STDOUT_FILENO);
           }*/
-          
           close(my_pipe[0]);
           close(my_pipe[1]);
-          execvp(command[0], command);
-          return 0;
         }
-        else 
+
+        execvp(command[0], command);
+        return 0;
+      }
+      else 
+      {
+        if (args[index + 1] == NULL)
         {
-          if (args[index + 1] == NULL)
-          {
-            close(my_pipe[1]);
-            close(my_pipe[0]);
-            //wait(&result);
-            waitpid(pid, NULL, 0);
-          }
-            //waitpid(-1, NULL, 0);
-            index++;
+          close(my_pipe[1]);
+          close(my_pipe[0]);
+          //wait(&result);
+          waitpid(pid, NULL, 0);
         }
+          //waitpid(-1, NULL, 0);
+          index++;
       }
     }
 
@@ -97,7 +102,11 @@ int main()
       command[i] = (char *) calloc(MAX_LENGTH, sizeof(char));
     }
     parse_char(args, '|');
-    pipe(my_pipe);
+    if (pipe(my_pipe) == -1)
+    {
+      printf("erreur sur le pipe");
+      return 1;
+    }
     index = 0;
   }
 
@@ -108,4 +117,3 @@ int main()
   }
   return 0;
 }
-
