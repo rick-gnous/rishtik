@@ -30,29 +30,6 @@ int main()
   }
 
   parse_char(args, '|');
-/*
-  int indx = 0;
-  while (args[indx] != NULL)
-  {
-    tok_space(args[indx], command);
-    int i = 0;
-    while (command[i] != NULL)
-    {
-      printf("- %s - ", command[i]);
-    i++;
-    }
-    for (int i = 0; i < MAX_LENGTH; i++)
-    {
-      free(command[i]);
-      command[i] = (char *) calloc(MAX_LENGTH, sizeof(char));
-    }
-      if ( args[indx+1] == NULL )
-        printf("CASSSSSESESESESISRETNRISUT.NR\n");
-    indx++;
-  }
-  return 0;
-*/
-
 
   int index = 0;
   while (strcmp(args[0], "exit"))
@@ -86,10 +63,8 @@ int main()
         {
           close(my_pipe[1]);
           close(my_pipe[0]);
-          //wait(&result);
           waitpid(pid, NULL, 0);
         }
-          //waitpid(-1, NULL, 0);
           index++;
       }
     }

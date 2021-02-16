@@ -12,7 +12,8 @@
 
 /**
  * get_input(): Permet de récupérer la saisie de l’utilisateur
- * @user_input: string où sera enregistrée l’entrée de l’utilisateur
+ *
+ * Return: Entrée utilisateur
  */
 char* get_input()
 {
