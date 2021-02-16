@@ -1,13 +1,18 @@
+/**
+ * @file parser.c
+ * @author rick <rick@gnous.eu>
+ * @date 2021
+ */
+
+#include "parser.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "mylib.h"
-
 /**
- * @brief Permet de récupérer la commande de l’utilisateur
- *
- * @param user_input entrée de l’utilisateur, contiendrat la commande à exécuter
+ * get_input(): Permet de récupérer la saisie de l’utilisateur
+ * @user_input: string où sera enregistrée l’entrée de l’utilisateur
  */
 void get_input(char *user_input)
 {
@@ -25,12 +30,12 @@ void get_input(char *user_input)
 }
 
 /**
- * @brief récupère l’entrée de l’utilisateur et la découpe
- * selon le caractère passé en paramètre
+ * parse_char(): Récupère l’entrée de l’utilisateur avant de la parser
+ * @args: Tableau de string
+ * @find: caractère utilisé pour parser
  *
- * @param args Tableau de string qui sera modifié avec
- * les arguments de la commande
- * @param find Le caractère à utiliser pour découper la chaine
+ * Récupère l’entrée de l’utilisateur avant de la parser avec le caractère
+ * find. Chaque string sera mise dans une case de args.
  */
 void parse_char(char *args[], char find)
 {
@@ -56,10 +61,15 @@ void parse_char(char *args[], char find)
   free(user_input);
 }
 
-/*
- * @brief parse la chaine orig avec les espaces et la met dans le tableau dest
- * */
-void tok_space(char *orig, char* dest[])
+/**
+ * tok_space(): Découpe la chaine orig et met chaque mot dans le tableau dest
+ * @orig: chaine à découper
+ * @dest: tableau de string où sera stocker les mots
+ *
+ * La chaine de caractères orig est découper avec les espaces et chaques
+ * mots sont mis dans le tableau dest.
+ */
+void tok_space(char *orig, char *dest[])
 {
   char find = ' ';
 
