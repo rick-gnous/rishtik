@@ -1,16 +1,18 @@
 CC=gcc
 CFLAGS=-Wall -g -Isrc/parser
 
-%: obj/lib.o obj/%.o 
+all: directories rishtik clean
+
+rishtik: obj/lib.o obj/shell.o 
 	$(CC) -o $@ $^
 
-obj/%.o: src/%.c 
+obj/shell.o: src/shellOpt.c 
 	$(CC) $(CFLAGS) $^ -o $@ -c
 
 obj/lib.o: src/parser/parser.c directories 
 	$(CC) $(CFLAGS) $< -o $@ -c
 
-.PHONY: directories clean
+.PHONY: all directories clean
 
 directories:
 	if ! [ -d "obj" ]; then \
