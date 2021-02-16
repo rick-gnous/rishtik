@@ -41,22 +41,7 @@ char* get_input()
 void parse_char(char *args[], char find)
 {
   char *user_input = get_input();
-  char *token = strtok(user_input, &find);
-
-  int i = 0;
-  while (token != NULL && i < MAX_LENGTH)
-  {
-    strcpy(args[i], token);
-    i++;
-    token = strtok(NULL, &find);
-  }
-
-  // le dernier argument doit être NULL
-  // car il est vide et provoque une erreur si non NULL
-  free(args[i]);
-  args[i] = NULL;
-
-  free(token);
+  tok_space(user_input, args, find);
   free(user_input);
 }
 
@@ -64,14 +49,13 @@ void parse_char(char *args[], char find)
  * tok_space(): Découpe la chaine orig et met chaque mot dans le tableau dest
  * @orig: chaine à découper
  * @dest: tableau de string où sera stocker les mots
+ * @find: caractère à utilise pour parser la chaine orig
  *
- * La chaine de caractères orig est découper avec les espaces et chaques
- * mots sont mis dans le tableau dest.
+ * La chaine de caractères orig est découpée selon le caractère find
+ * et chaques mots sont mis dans le tableau dest.
  */
-void tok_space(char *orig, char *dest[])
+void tok_space(char *orig, char *dest[], char find)
 {
-  char find = ' ';
-
   char *token = strtok(orig, &find);
 
   int i = 0;

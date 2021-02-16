@@ -12,6 +12,6 @@
 
 char* get_input();
 void parse_char(char *args[], char find);
-void tok_space(char *args,char  *commands[]);
+void tok_space(char *args,char  *commands[], char find);
 
 #endif

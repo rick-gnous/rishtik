@@ -39,7 +39,7 @@ int main()
       pid = fork();
       if (!pid)
       {
-        tok_space(args[index], command);
+        tok_space(args[index], command, ' ');
         if (args[1] != NULL) 
         {
           if (args[index+1] == NULL)
