@@ -19,8 +19,7 @@
  */
 char* get_input()
 {
-  char *buffer = (char *) malloc(MAX_LENGTH);
-  memset(buffer, 0, MAX_LENGTH);
+  char *buffer = (char *) calloc(MAX_LENGTH, sizeof(char));
   buffer[0] = '\n';
 
   while (buffer[0] == '\n') 
