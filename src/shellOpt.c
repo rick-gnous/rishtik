@@ -80,7 +80,14 @@ int main()
 
     get_command(commands, '|');
     if (pipe(my_pipe) == -1)
+    {
+      for (int i = 0; i < MAX_LENGTH; i++)
+      {
+        free(args[i]);
+        free(commands[i]);
+      }
       error(1, FATAL_ERROR, NULL);
+    }
     index = 0;
   }
 
