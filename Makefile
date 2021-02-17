@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS=-Wall -g -Isrc/shell_tools
-LIB=src/shell_tools
+CFLAGS=-Wall -g -Isrc/boitoutil
+LIB=src/boitoutil
 
 all: directories rishtik clean
 
