@@ -5,6 +5,7 @@
  */
 
 #include "parser.h"
+#include "essential_shell.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,93 +15,78 @@
 
 int main()
 {
-  int pid;
-  char *args[MAX_LENGTH];
-  char *command[MAX_LENGTH];
+  /** commands contient l’entrée utilisateur parsée avec | :
+   *  ls | wc -l -> [ls, wc -l]
+   *
+   *  args contient une commande à la fois avec ses arguments séparés
+   *  par les espaces : 
+   *  ls -R test -> [ls, -R, test]
+   */
+  char *commands[MAX_LENGTH]; 
+  char *args[MAX_LENGTH]; 
+
+  int pid, index = 0, end = 0; /* end permet de savoir quand s’arreter */
   int my_pipe[2];
+
   if (pipe(my_pipe) == -1)
-  {
-    printf("erreur pipe");
-    return 1;
-  }
+    error(1, FATAL_ERROR, NULL);
+
   for (int i = 0; i < MAX_LENGTH; i++)
   {
     args[i] = (char *) calloc(MAX_LENGTH, sizeof(char));
-    command[i] = (char *) calloc(MAX_LENGTH, sizeof(char));
+    commands[i] = (char *) calloc(MAX_LENGTH, sizeof(char));
   }
 
-  get_command(args, '|');
+  get_command(commands, '|');
 
-  int index = 0;
-  while (strcmp(args[0], "exit"))
+  while (strcmp(commands[0], "exit"))
   {
-    while (args[index] != NULL)
+    while (commands[index] != NULL)
     {
-      if (strncmp(args[index], "cd", 2))
-      {
         pid = fork();
         if (!pid)
         {
-          parse_string(args[index], command, ' ');
-          if (args[1] != NULL) 
-          {
-            if (args[index+1] == NULL)
-              dup2(my_pipe[0], STDIN_FILENO);
-            else if (index == 0)
-              dup2(my_pipe[1], STDOUT_FILENO);
-            /*else {
-              dup2(my_pipe[0], STDIN_FILENO);
-              dup2(my_pipe[1], STDOUT_FILENO);
-            }*/
-            close(my_pipe[0]);
-            close(my_pipe[1]);
-          }
+          parse_string(commands[index], args, ' ');
+          if (commands[index+1] == NULL)
+            dup2(my_pipe[0], STDIN_FILENO);
+          else if (index == 0)
+            dup2(my_pipe[1], STDOUT_FILENO);
+          close(my_pipe[0]);
+          close(my_pipe[1]);
 
-          execvp(command[0], command);
+          execvp(args[0], args);
           return 0;
         }
         else 
         {
-          if (args[index + 1] == NULL)
+          if (commands[index + 1] == NULL)
           {
             close(my_pipe[1]);
             close(my_pipe[0]);
             waitpid(pid, NULL, 0);
           }
         }
-      }
-      else
-      {
-        parse_string(args[index], command, ' ');
-        execvp(command[0], command);
-        for (int i = 0; i < MAX_LENGTH; i++)
-        {
-          free(command[i]);
-          command[i] = (char *) calloc(MAX_LENGTH, sizeof(char));
-        }
-      }
       index++;
     }
 
+    /* remise à 0 des entrées, des commandes, des pipes et de l’index */
     for (int i = 0; i < MAX_LENGTH; i++)
     {
       free(args[i]);
-      free(command[i]);
+      free(commands[i]);
       args[i] = (char *) calloc(MAX_LENGTH, sizeof(char));
-      command[i] = (char *) calloc(MAX_LENGTH, sizeof(char));
+      commands[i] = (char *) calloc(MAX_LENGTH, sizeof(char));
     }
-    get_command(args, '|');
+
+    get_command(commands, '|');
     if (pipe(my_pipe) == -1)
-    {
-      printf("erreur sur le pipe");
-      return 1;
-    }
+      error(1, FATAL_ERROR, NULL);
     index = 0;
   }
 
   for (int i = 0; i < MAX_LENGTH; i++)
   {
-    free(command[i]);
+    free(commands[i]);
     free(args[i]);
   }
   return 0;

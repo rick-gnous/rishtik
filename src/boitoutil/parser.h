@@ -11,7 +11,6 @@
 #   define _PARSER_H_
 
 #define MAX_LENGTH 200 /* taille maximum des tableaux utilisés */
-#define SHELL rishtik
 
 char* get_input();
 void get_command(char *args[], char find);
