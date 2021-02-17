@@ -1,4 +1,6 @@
 /**
+ * Header pour la bibliothèque servant à parser et récupérer l’entrée
+ * utilisateur.
  * @file parser.h
  * @author rick <rick@gnous.eu>
  * @date 2021
