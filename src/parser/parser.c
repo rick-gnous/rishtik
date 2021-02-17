@@ -31,22 +31,22 @@ char* get_input()
 }
 
 /**
- * parse_char(): Récupère l’entrée de l’utilisateur avant de la parser
+ * get_command(): Récupère l’entrée de l’utilisateur avant de la parser
  * @args: Tableau de string
  * @find: caractère utilisé pour parser
  *
  * Récupère l’entrée de l’utilisateur avant de la parser avec le caractère
  * find. Chaque string sera mise dans une case de args.
  */
-void parse_char(char *args[], char find)
+void get_command(char *args[], char find)
 {
   char *user_input = get_input();
-  tok_space(user_input, args, find);
+  parse_string(user_input, args, find);
   free(user_input);
 }
 
 /**
- * tok_space(): Découpe la chaine orig et met chaque mot dans le tableau dest
+ * parse_string(): Découpe la chaine orig et met chaque mot dans le tableau dest
  * @orig: chaine à découper
  * @dest: tableau de string où sera stocker les mots
  * @find: caractère à utilise pour parser la chaine orig
@@ -54,7 +54,7 @@ void parse_char(char *args[], char find)
  * La chaine de caractères orig est découpée selon le caractère find
  * et chaques mots sont mis dans le tableau dest.
  */
-void tok_space(char *orig, char *dest[], char find)
+void parse_string(char *orig, char *dest[], char find)
 {
   char *token = strtok(orig, &find);
 

@@ -29,44 +29,57 @@ int main()
     command[i] = (char *) calloc(MAX_LENGTH, sizeof(char));
   }
 
-  parse_char(args, '|');
+  get_command(args, '|');
 
   int index = 0;
   while (strcmp(args[0], "exit"))
   {
     while (args[index] != NULL)
     {
-      pid = fork();
-      if (!pid)
+      if (strncmp(args[index], "cd", 2))
       {
-        tok_space(args[index], command, ' ');
-        if (args[1] != NULL) 
+        pid = fork();
+        if (!pid)
         {
-          if (args[index+1] == NULL)
-            dup2(my_pipe[0], STDIN_FILENO);
-          else if (index == 0)
-            dup2(my_pipe[1], STDOUT_FILENO);
-          /*else {
-            dup2(my_pipe[0], STDIN_FILENO);
-            dup2(my_pipe[1], STDOUT_FILENO);
-          }*/
-          close(my_pipe[0]);
-          close(my_pipe[1]);
-        }
+          parse_string(args[index], command, ' ');
+          if (args[1] != NULL) 
+          {
+            if (args[index+1] == NULL)
+              dup2(my_pipe[0], STDIN_FILENO);
+            else if (index == 0)
+              dup2(my_pipe[1], STDOUT_FILENO);
+            /*else {
+              dup2(my_pipe[0], STDIN_FILENO);
+              dup2(my_pipe[1], STDOUT_FILENO);
+            }*/
+            close(my_pipe[0]);
+            close(my_pipe[1]);
+          }
 
-        execvp(command[0], command);
-        return 0;
-      }
-      else 
-      {
-        if (args[index + 1] == NULL)
-        {
-          close(my_pipe[1]);
-          close(my_pipe[0]);
-          waitpid(pid, NULL, 0);
+          execvp(command[0], command);
+          return 0;
         }
-          index++;
+        else 
+        {
+          if (args[index + 1] == NULL)
+          {
+            close(my_pipe[1]);
+            close(my_pipe[0]);
+            waitpid(pid, NULL, 0);
+          }
+        }
       }
+      else
+      {
+        parse_string(args[index], command, ' ');
+        execvp(command[0], command);
+        for (int i = 0; i < MAX_LENGTH; i++)
+        {
+          free(command[i]);
+          command[i] = (char *) calloc(MAX_LENGTH, sizeof(char));
+        }
+      }
+      index++;
     }
 
     for (int i = 0; i < MAX_LENGTH; i++)
@@ -76,7 +89,7 @@ int main()
       args[i] = (char *) calloc(MAX_LENGTH, sizeof(char));
       command[i] = (char *) calloc(MAX_LENGTH, sizeof(char));
     }
-    parse_char(args, '|');
+    get_command(args, '|');
     if (pipe(my_pipe) == -1)
     {
       printf("erreur sur le pipe");
