@@ -53,8 +53,8 @@ int main()
             dup2(my_pipe[0], STDIN_FILENO);
           else if (index == 0)
             dup2(my_pipe[1], STDOUT_FILENO);
-          //close(my_pipe[0]);
-          //close(my_pipe[1]);
+          close(my_pipe[0]);
+          close(my_pipe[1]);
 
           execvp(args[0], args);
           return 0;
