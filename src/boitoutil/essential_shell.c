@@ -8,6 +8,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 /**
  * error(): gère les erreurs selon leur code et leur type
@@ -17,6 +19,7 @@
  * @message: message à afficher pour + d’infos ou erreur non implémentée
  *
  * 1  erreur lors de la création des pipes
+ * 2  chemin inexistant (pour cd)
  */
 void error(int code, int type, char *message) 
 {
@@ -24,6 +27,9 @@ void error(int code, int type, char *message)
   {
     case 1:
       printf("Erreur lors de la création des pipes.\n");
+      break;
+    case 2:
+      printf("Chemin inexistant.\n");
       break;
 
     default:
@@ -38,4 +44,25 @@ void error(int code, int type, char *message)
 
   if (type == FATAL_ERROR)
     exit(code);
+}
+
+/**
+ * change_dir(): fonction pour vérifier si la commande est un cd
+ * @args: la liste des arguments de la commade 
+ *
+ * Return: 0 si ce n’est pas un cd, 1 sinon
+ */
+int change_dir(char *args[])
+{
+  int ret = 0; /* 1 si cd */
+
+  if (!strncmp(args[0], "cd", 2))
+  {
+    ret = 1;
+    if (chdir(args[1]))
+      error(2, NON_FATAL_ERROR, "Un nom de fichier au lieu d’un dossier \
+          a pu etre passé en paramètres.");
+  }
+
+  return ret;
 }
