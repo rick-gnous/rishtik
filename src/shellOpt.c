@@ -43,39 +43,37 @@ int main()
   {
     while (commands[index] != NULL)
     {
-        parse_string(commands[index], args, ' ');
-        if (!change_dir(args))
+      parse_string(commands[index], args, ' ');
+      if (!change_dir(args))
+      {
+        pid = fork();
+        if (!pid)
         {
-          pid = fork();
-          if (!pid)
-          {
-              if (commands[index+1] == NULL)
-                dup2(my_pipe[0], STDIN_FILENO);
-              else if (index == 0)
-                dup2(my_pipe[1], STDOUT_FILENO);
-              close(my_pipe[0]);
-              close(my_pipe[1]);
+          if (commands[index+1] == NULL)
+            dup2(my_pipe[0], STDIN_FILENO);
+          else if (index == 0)
+            dup2(my_pipe[1], STDOUT_FILENO);
+          //close(my_pipe[0]);
+          //close(my_pipe[1]);
 
-              execvp(args[0], args);
-            return 0;
-          }
-          else 
-          {
-            if (commands[index + 1] == NULL)
-            {
-              close(my_pipe[1]);
-              close(my_pipe[0]);
-              waitpid(pid, NULL, 0);
-            }
-          }
+          execvp(args[0], args);
+          return 0;
         }
 
-        for (int i = 0; i < MAX_LENGTH; i++)
+        if (commands[index + 1] == NULL)
         {
-          free(args[i]);
-          args[i] = (char *) calloc(MAX_LENGTH, sizeof(char));
+          close(my_pipe[1]);
+          close(my_pipe[0]);
+          waitpid(pid, NULL, 0);
         }
-        index++;
+      }
+
+      for (int i = 0; i < MAX_LENGTH; i++)
+      {
+        free(args[i]);
+        args[i] = (char *) calloc(MAX_LENGTH, sizeof(char));
+      }
+      index++;
     }
 
     /* remise à 0 des entrées, des commandes, des pipes et de l’index */
