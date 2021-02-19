@@ -44,26 +44,36 @@ int main()
     while (commands[index] != NULL)
     {
       parse_string(commands[index], args, ' ');
-      if (!change_dir(args))
+      if (!change_dir(args)) /* si la commande demandée n’est pas un cd */
       {
         pid = fork();
-        if (!pid)
+        if (!pid) /* le fils */
         {
-          if (commands[index+1] == NULL)
+          if (commands[index+1] == NULL) 
+          {
             dup2(my_pipe[0], STDIN_FILENO);
+            close(my_pipe[1]);
+          }
           else if (index == 0)
+          {
             dup2(my_pipe[1], STDOUT_FILENO);
-          close(my_pipe[0]);
-          close(my_pipe[1]);
+            close(my_pipe[0]);
+          }
+          else
+            fclose(fdopen(my_pipe[0], "w"));
+          /* si la commande est intermédiaire dans le pipe, on vide le buffer
+           * de sortie */
 
           execvp(args[0], args);
-          return 0;
+          exit(0);
         }
 
+        /* lorsqu’on arrive à la dernière commande, on peut fermer le pipe et 
+         * attendre le dernier processus */
         if (commands[index + 1] == NULL)
         {
-          close(my_pipe[1]);
           close(my_pipe[0]);
+          close(my_pipe[1]);
           waitpid(pid, NULL, 0);
         }
       }
