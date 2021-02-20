@@ -61,8 +61,9 @@ void error(int code, int type, char *message)
 int native_command(char *command[])
 {
   int ret = 1; /* 0 si commande non native */
-  if (!strncmp(command[0], "cd", 2))
+  if (!strcmp(command[0], "cd"))
     change_dir(command[1]);
+
   else
     ret = 0;
   return ret;
