@@ -54,21 +54,34 @@ void get_command(char *args[], char find)
  *
  * La chaine de caractères orig est découpée selon le caractère find
  * et chaques mots sont mis dans le tableau dest.
+ * S’il y a un \ avant le caractère find, celui-ce sera ignoré.
  */
 void parse_string(char *orig, char *dest[], char find)
 {
   char *token = strtok(orig, &find);
+  int pred = 0, i = 0;
 
-  int i = 0;
   while (token != NULL && i < MAX_LENGTH)
   {
-    strcpy(dest[i], token);
-    i++;
+    if (pred)
+    {
+      dest[i][strlen(dest[i])-1] = find;
+      strcat(dest[i], token);
+      pred = 0;
+    }
+    else
+      strcpy(dest[i], token);
+
+    if (dest[i][strlen(dest[i])-1] == '\\')
+      pred = 1;
+    else
+      i++;
+
     token = strtok(NULL, &find);
   }
 
-  // le dernier argument doit être NULL
-  // car il est vide et provoque une erreur si non NULL
+  /** le dernier argument doit être NULL
+   car il est vide et provoque une erreur si non NULL */
   free(dest[i]);
   dest[i] = NULL;
 
