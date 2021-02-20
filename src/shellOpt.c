@@ -4,6 +4,7 @@
  * @date 2021
  */
 
+#include "vars.h"
 #include "parser.h"
 #include "essential_shell.h"
 

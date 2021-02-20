@@ -10,8 +10,6 @@
 #ifndef _PARSER_H_
 #   define _PARSER_H_
 
-#define MAX_LENGTH 200 /* taille maximum des tableaux utilisés */
-
 char* get_input();
 void get_command(char *args[], char find);
 void parse_string(char *args,char  *commands[], char find);
