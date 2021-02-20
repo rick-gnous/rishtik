@@ -4,7 +4,9 @@
  * @date 2021
  */
 
+#include "vars.h"
 #include "essential_shell.h"
+#include "oui-dire.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -63,7 +65,21 @@ int native_command(char *command[])
   int ret = 1; /* 0 si commande non native */
   if (!strcmp(command[0], "cd"))
     change_dir(command[1]);
-
+  if (!strcmp(command[0], "ouï-dire") || !strcmp(command[0], "oui-dire")
+      || !strcmp(command[0], "echo"))
+  {
+    char *tmp = calloc(MAX_LENGTH, sizeof(char));
+    int i = 1;
+    while (command[i] != NULL)
+    {
+      strcat(tmp, command[i]);
+      *(tmp + strlen(tmp)) = ' ';
+      i++;
+    }
+    if (i == 2)
+      *(tmp + strlen(tmp) - 1) = '\0';
+    echo(tmp);
+  }
   else
     ret = 0;
   return ret;
