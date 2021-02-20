@@ -47,22 +47,34 @@ void error(int code, int type, char *message)
 }
 
 /**
- * change_dir(): fonction pour vérifier si la commande est un cd
- * @args: la liste des arguments de la commade 
+ * native_command(): vérifie si la commande entrée par l’utilisateur
+ * est implémenté dans le terminal
+ * @command: la commande et ses arguments à vérifier
  *
- * Return: 0 si ce n’est pas un cd, 1 sinon
+ * Vérifie si la commande entrée par l’utilisateur est native.
+ * Si elle l’est, le programme appelle la fonction pour exécuter la commande
+ * en lui passant en paramètre les arguments de la commande.
+ *
+ * Return: 0 si la commande n’est pas native
+ *         1 si la commande est native
  */
-int change_dir(char *args[])
+int native_command(char *command[])
 {
-  int ret = 0; /* 1 si cd */
-
-  if (!strncmp(args[0], "cd", 2))
-  {
-    ret = 1;
-    if (chdir(args[1]))
-      error(2, NON_FATAL_ERROR, "Un nom de fichier au lieu d’un dossier \
-          a pu etre passé en paramètres.");
-  }
-
+  int ret = 1; /* 0 si commande non native */
+  if (!strncmp(command[0], "cd", 2))
+    change_dir(command[1]);
+  else
+    ret = 0;
   return ret;
+}
+
+/**
+ * change_dir(): fonction pour implémenter la commande cd
+ * @dir: le répertoire à ouvrir
+ */
+void change_dir(char *dir)
+{
+  if (chdir(dir))
+    error(2, NON_FATAL_ERROR, "Un nom de fichier au lieu d’un dossier \
+        a pu etre passé en paramètres.");
 }

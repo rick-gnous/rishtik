@@ -15,6 +15,7 @@
 #define NON_FATAL_ERROR 0
 
 void error(int code, int type, char *message);
-int change_dir(char *args[]);
+int native_command(char *command[]);
+void change_dir(char *dir);
 
 #endif

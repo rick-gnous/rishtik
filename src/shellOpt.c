@@ -27,6 +27,7 @@ int main()
 
   int pid, index = 0, end = 0; /* end permet de savoir quand s’arreter */
   int my_pipe[2];
+  setenv("HELLO", "test", 1);
 
   if (pipe(my_pipe) == -1)
     error(1, FATAL_ERROR, NULL);
@@ -44,7 +45,7 @@ int main()
     while (commands[index] != NULL)
     {
       parse_string(commands[index], args, ' ');
-      if (!change_dir(args)) /* si la commande demandée n’est pas un cd */
+      if (!native_command(args)) /* si la commande demandée n’est pas native */
       {
         pid = fork();
         if (!pid) /* le fils */
