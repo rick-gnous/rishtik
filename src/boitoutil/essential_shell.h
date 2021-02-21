@@ -14,6 +14,9 @@
 #define FATAL_ERROR 1
 #define NON_FATAL_ERROR 0
 
+#define ERR_PIPE_CREATION 200   /* erreur lors de la création des pipes */
+#define ERR_FORK 201            /* erreur lors du fork */
+
 void error(int code, int type, char *message);
 int native_command(char *command[]);
 void change_dir(char *dir);

@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 #include <sys/wait.h>
 
 int main()
@@ -26,12 +27,12 @@ int main()
   char *commands[MAX_LENGTH]; 
   char *args[MAX_LENGTH]; 
 
-  int pid, index = 0, end = 0; /* end permet de savoir quand s’arreter */
+  int pid, result, index = 0, end = 0; /* end permet de savoir quand s’arreter */
   int my_pipe[2];
   setenv("HELLO", "test", 1);
 
   if (pipe(my_pipe) == -1)
-    error(1, FATAL_ERROR, NULL);
+    error(ERR_PIPE_CREATION, FATAL_ERROR, NULL);
 
   for (int i = 0; i < MAX_LENGTH; i++)
   {
@@ -50,7 +51,7 @@ int main()
       {
         pid = fork();
         if (pid < 0)
-          error(3, FATAL_ERROR, NULL);
+          error(ERR_FORK, FATAL_ERROR, NULL);
 
         if (!pid) /* le fils */
         {
@@ -70,7 +71,7 @@ int main()
            * de sortie */
 
           execvp(args[0], args);
-          exit(0);
+          exit(errno);
         }
 
         /* lorsqu’on arrive à la dernière commande, on peut fermer le pipe et 
@@ -79,8 +80,13 @@ int main()
         {
           close(my_pipe[0]);
           close(my_pipe[1]);
-          waitpid(pid, NULL, 0);
+          waitpid(pid, &result, 0);
         }
+        else 
+          wait(&result);
+
+        if(WIFEXITED(result))
+          error(WEXITSTATUS(result), NON_FATAL_ERROR, NULL);
       }
 
       for (int i = 0; i < MAX_LENGTH; i++)
@@ -108,7 +114,7 @@ int main()
         free(args[i]);
         free(commands[i]);
       }
-      error(1, FATAL_ERROR, NULL);
+      error(ERR_PIPE_CREATION, FATAL_ERROR, NULL);
     }
     index = 0;
   }

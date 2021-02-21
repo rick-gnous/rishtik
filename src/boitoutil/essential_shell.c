@@ -12,41 +12,52 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 
 /**
  * error(): gère les erreurs selon leur code et leur type
- * @code: code de l’erreur, voir les différents codes plus bas
+ * @code: code de l’erreur, voir les différents codes dans le fichier .h
  * @type: NON_FATAL_ERROR pour continuer l’exécution
  *        FATAL_ERROR pour stoper le programme 
  * @message: message à afficher pour + d’infos ou erreur non implémentée
- *
- * 1  erreur lors de la création des pipes
- * 2  chemin inexistant
- * 3  erreur lors du fork
  */
 void error(int code, int type, char *message) 
 {
-  switch (code)
-  {
-    case 1:
-      printf("Erreur lors de la création des pipes.\n");
-      break;
-    case 2:
-      printf("Chemin inexistant.\n");
-      break;
-    case 3:
-      printf("Le fork a échoué, le processus enfant a été avorté.\n");
-      break;
+  if (code == 0)
+    return;
 
-    default:
-      if (message == NULL)
-        printf("Erreur inconnue.\n");
-      else
-        printf("%s\n", message);
+  const char *txt_error = strerror(code);
+  if (errno == EINVAL)
+  {
+    switch (code)
+    {
+      case ERR_PIPE_CREATION:
+        fprintf(stderr, "Erreur lors de la création des pipes.\n");
+        break;
+      case ERR_FORK:
+        fprintf(stderr, "Le fork a échoué, le processus enfant a été avorté.\n");
+        break;
+
+      default:
+        if (message == NULL)
+          fprintf(stderr, "Erreur inconnue.\n");
+        else
+          fprintf(stderr, "%s\n", message);
+    }
+    if (message != NULL)
+      fprintf(stderr, "Message complémentaire :\n%s\n", message);
+  }
+  else 
+  {
+    if (message != NULL)
+    {
+      errno = code;
+      perror(message);  
+    }
+    else
+      fprintf(stderr, "%s\n", txt_error);
   }
 
-  if (message != NULL)
-    printf("Message complémentaire :\n%s\n", message);
 
   if (type == FATAL_ERROR)
     exit(code);
@@ -95,7 +106,10 @@ int native_command(char *command[])
  */
 void change_dir(char *dir)
 {
-  if (chdir(dir))
-    error(2, NON_FATAL_ERROR, "Un nom de fichier au lieu d’un dossier \
-        a pu etre passé en paramètres.");
+  if (chdir(dir) < 0)
+  {
+    char txt_error[MAX_LENGTH] = "cd: ";
+    strcat(txt_error, dir);
+    error(errno, NON_FATAL_ERROR, txt_error);
+  }
 }
