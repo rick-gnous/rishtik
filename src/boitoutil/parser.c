@@ -82,7 +82,7 @@ void parse_string(char *orig, char *dest[], char find)
   }
 
   /** le dernier argument doit être NULL
-   car il est vide et provoque une erreur si non NULL */
+   pour l’utilisation de execvp */
   free(dest[i]);
   dest[i] = NULL;
 
