@@ -49,6 +49,9 @@ int main()
       if (!native_command(args)) /* si la commande demandée n’est pas native */
       {
         pid = fork();
+        if (pid < 0)
+          error(3, FATAL_ERROR, NULL);
+
         if (!pid) /* le fils */
         {
           if (commands[index+1] == NULL) 

@@ -21,7 +21,8 @@
  * @message: message à afficher pour + d’infos ou erreur non implémentée
  *
  * 1  erreur lors de la création des pipes
- * 2  chemin inexistant (pour cd)
+ * 2  chemin inexistant
+ * 3  erreur lors du fork
  */
 void error(int code, int type, char *message) 
 {
@@ -32,6 +33,9 @@ void error(int code, int type, char *message)
       break;
     case 2:
       printf("Chemin inexistant.\n");
+      break;
+    case 3:
+      printf("Le fork a échoué, le processus enfant a été avorté.\n");
       break;
 
     default:
