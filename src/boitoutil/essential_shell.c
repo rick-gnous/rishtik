@@ -15,55 +15,6 @@
 #include <errno.h>
 
 /**
- * error(): gère les erreurs selon leur code et leur type
- * @code: code de l’erreur, voir les différents codes dans le fichier .h
- * @type: NON_FATAL_ERROR pour continuer l’exécution
- *        FATAL_ERROR pour stoper le programme 
- * @message: message à afficher pour + d’infos ou erreur non implémentée
- */
-void error(int code, int type, char *message) 
-{
-  if (code == 0)
-    return;
-
-  const char *txt_error = strerror(code);
-  if (errno == EINVAL)
-  {
-    switch (code)
-    {
-      case ERR_PIPE_CREATION:
-        fprintf(stderr, "Erreur lors de la création des pipes.\n");
-        break;
-      case ERR_FORK:
-        fprintf(stderr, "Le fork a échoué, le processus enfant a été avorté.\n");
-        break;
-
-      default:
-        if (message == NULL)
-          fprintf(stderr, "Erreur inconnue.\n");
-        else
-          fprintf(stderr, "%s\n", message);
-    }
-    if (message != NULL)
-      fprintf(stderr, "Message complémentaire :\n%s\n", message);
-  }
-  else 
-  {
-    if (message != NULL)
-    {
-      errno = code;
-      perror(message);  
-    }
-    else
-      fprintf(stderr, "%s\n", txt_error);
-  }
-
-
-  if (type == FATAL_ERROR)
-    exit(code);
-}
-
-/**
  * native_command(): vérifie si la commande entrée par l’utilisateur
  * est implémenté dans le terminal
  * @command: la commande et ses arguments à vérifier
@@ -108,8 +59,57 @@ void change_dir(char *dir)
 {
   if (chdir(dir) < 0)
   {
+    int code = errno;
     char txt_error[MAX_LENGTH] = "cd: ";
     strcat(txt_error, dir);
-    error(errno, NON_FATAL_ERROR, txt_error);
+    error(code, NON_FATAL_ERROR, txt_error);
   }
+}
+
+/**
+ * error(): gère les erreurs selon leur code et leur type
+ * @code: code de l’erreur, voir les différents codes dans le fichier .h
+ * @type: NON_FATAL_ERROR pour continuer l’exécution
+ *        FATAL_ERROR pour stoper le programme
+ * @message: message à afficher pour + d’infos ou erreur non implémentée
+ */
+void error(int code, int type, char *message)
+{
+  if (code == 0)
+    return;
+
+  /* const char *txt_error = strerror(code); */
+  if (errno == EINVAL)
+  {
+    switch (code)
+    {
+      case ERR_PIPE_CREATION:
+        fprintf(stderr, "Erreur lors de la création des pipes.\n");
+        break;
+      case ERR_FORK:
+        fprintf(stderr, "Le fork a échoué, le processus enfant a été avorté.\n");
+        break;
+
+      default:
+        if (message == NULL)
+          fprintf(stderr, "Erreur inconnue.\n");
+        else
+          fprintf(stderr, "%s\n", message);
+    }
+    if (message != NULL)
+      fprintf(stderr, "Message complémentaire :\n%s\n", message);
+  }
+  else
+  {
+    if (message != NULL)
+    {
+      errno = code;
+      perror(message);
+    }
+    /* else
+      fprintf(stderr, "%s\n", txt_error); */
+  }
+
+  if (type == FATAL_ERROR)
+    exit(code);
 }
