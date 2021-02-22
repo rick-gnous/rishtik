@@ -13,6 +13,10 @@
 #include <string.h>
 #include <unistd.h>
 #include <errno.h>
+//#include <sys/types.h>
+#include <signal.h>
+
+pid_t pid;
 
 /**
  * native_command(): vérifie si la commande entrée par l’utilisateur
@@ -64,6 +68,14 @@ void change_dir(char *dir)
     strcat(txt_error, dir);
     error(code, NON_FATAL_ERROR, txt_error);
   }
+}
+
+void ctrl_c_handler()
+{
+  //kill(pid, SIGTERM);
+  //kill(pid, SIGKILL);
+  kill(getpid(), SIGCHLD);
+  printf("\n");
 }
 
 /**

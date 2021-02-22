@@ -7,6 +7,8 @@
  * @date 2021
  */
 
+#include <unistd.h>
+
 #ifndef _ESSHELL_
 #   define _ESSHELL_
 
@@ -17,8 +19,11 @@
 #define ERR_PIPE_CREATION 200   /* erreur lors de la création des pipes */
 #define ERR_FORK 201            /* erreur lors du fork */
 
+extern pid_t pid;
+
 int native_command(char *command[]);
 void change_dir(char *dir);
+void ctrl_c_handler();
 void error(int code, int type, char *message);
 
 #endif

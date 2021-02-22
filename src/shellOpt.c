@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <sys/wait.h>
+#include <signal.h>
 
 int main()
 {
@@ -27,9 +28,18 @@ int main()
   char *commands[MAX_LENGTH]; 
   char *args[MAX_LENGTH]; 
 
-  int pid, result, index = 0, end = 0; /* end permet de savoir quand s’arreter */
+  int result, index = 0, end = 0; /* end permet de savoir quand s’arreter */
   int my_pipe[2];
-  setenv("HELLO", "test", 1);
+
+  /* init pour la gestion du ctrl c */
+  struct sigaction ctrc_handler;
+  ctrc_handler.sa_handler = ctrl_c_handler;
+  sigemptyset(&ctrc_handler.sa_mask);
+  ctrc_handler.sa_flags = 0;
+
+  sigaction(SIGINT, &ctrc_handler, NULL);
+
+  setenv("HELLO", "test", 1); /* juste un test */
 
   if (pipe(my_pipe) == -1)
     error(ERR_PIPE_CREATION, FATAL_ERROR, NULL);
@@ -40,9 +50,7 @@ int main()
     commands[i] = (char *) calloc(MAX_LENGTH, sizeof(char));
   }
 
-  get_command(commands, '|');
-
-  while (strcmp(commands[0], "exit"))
+  while (!get_command(commands, '|') && !detect_exit(commands[0]))
   {
     while (commands[index] != NULL)
     {
@@ -68,7 +76,7 @@ int main()
           else
             fclose(fdopen(my_pipe[0], "w"));
           /* si la commande est intermédiaire dans le pipe, on vide le buffer
-           * de sortie */
+           * de sortie NE MARCHE PAS */
 
           execvp(args[0], args);
           exit(errno);
@@ -80,12 +88,10 @@ int main()
         {
           close(my_pipe[0]);
           close(my_pipe[1]);
-          waitpid(pid, &result, 0);
         }
-        else 
-          wait(&result);
+        waitpid(pid, &result, 0);
 
-        if(WIFEXITED(result))
+        if(WIFEXITED(result)) /* on récupère le code de retour pour afficher l’erreur */
           error(WEXITSTATUS(result), NON_FATAL_ERROR, NULL);
       }
 
@@ -106,16 +112,8 @@ int main()
       commands[i] = (char *) calloc(MAX_LENGTH, sizeof(char));
     }
 
-    get_command(commands, '|');
     if (pipe(my_pipe) == -1)
-    {
-      for (int i = 0; i < MAX_LENGTH; i++)
-      {
-        free(args[i]);
-        free(commands[i]);
-      }
       error(ERR_PIPE_CREATION, FATAL_ERROR, NULL);
-    }
     index = 0;
   }
 

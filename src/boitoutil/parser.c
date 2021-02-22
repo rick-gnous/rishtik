@@ -16,19 +16,30 @@
 /**
  * get_input(): Permet de récupérer la saisie de l’utilisateur
  *
- * Return: Entrée utilisateur
+ * Return: Entrée utilisateur ou NULL si ctrl d détecté
  */
 char* get_input()
 {
+  int stop = 0; /* en cas de ctrl d */
   char *buffer = (char *) calloc(MAX_LENGTH, sizeof(char));
   buffer[0] = '\n';
 
-  while (buffer[0] == '\n') 
+  while (buffer[0] == '\n' && !stop)
   {
     printf("> ");
-    fgets(buffer, MAX_LENGTH, stdin);
+    if(fgets(buffer, MAX_LENGTH, stdin) == NULL)
+      stop++;
   }
-  buffer[strlen(buffer)-1] = '\0'; /* pour ne pas avoir un retour à la ligne */
+
+  if (stop)
+  {
+    free(buffer);
+    buffer = NULL;
+    putchar('\n'); /* pour un affichage propre */
+  }
+  else
+    buffer[strlen(buffer)-1] = '\0'; /* pour ne pas avoir un retour à la ligne */
+
   return buffer;
 }
 
@@ -39,12 +50,23 @@ char* get_input()
  *
  * Récupère l’entrée de l’utilisateur avant de la parser avec le caractère
  * find. Chaque string sera mise dans une case de args.
+ *
+ * Return: 0 si tout est OK, 1 sinon
  */
-void get_command(char *args[], char find)
+int get_command(char *args[], char find)
 {
+  int ret = 0;
   char *user_input = get_input();
-  parse_string(user_input, args, find);
-  free(user_input);
+
+  if (user_input == NULL)
+    ret = 1;
+  else
+  {
+    parse_string(user_input, args, find);
+    free(user_input);
+  }
+
+  return ret;
 }
 
 /**
@@ -87,4 +109,35 @@ void parse_string(char *orig, char *dest[], char find)
   dest[i] = NULL;
 
   free(token);
+}
+
+/**
+ * detect_exit(): vérifie si la commande entrée est exit
+ * @command: la première commande entrée par l’utilisateur
+ *
+ * Return: 0 si ce n’est pas exit, 1 sinon
+ */
+int detect_exit(char *command)
+{
+  /*
+   * TODO c’est dégueulasse, à changer pour un truc plus propre
+   */
+  char *str = malloc(MAX_LENGTH * sizeof(char));
+  strcpy(str, command);
+  char find = ' ';
+  char *token = strtok(str, &find);
+  char *args[MAX_LENGTH];
+  int ret = 0, i = 0;
+  while (token != NULL)
+  {
+    args[i] = token;
+    token = strtok(NULL, &find);
+    i++;
+  }
+
+  if (i == 1 && !strcmp(args[0], "exit"))
+    ret++;
+
+  free(token);
+  return ret;
 }

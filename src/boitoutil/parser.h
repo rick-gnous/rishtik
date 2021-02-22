@@ -11,7 +11,8 @@
 #   define _PARSER_H_
 
 char* get_input();
-void get_command(char *args[], char find);
+int get_command(char *args[], char find);
 void parse_string(char *args,char  *commands[], char find);
+int detect_exit(char *command);
 
 #endif
