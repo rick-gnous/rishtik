@@ -28,7 +28,7 @@ int main()
   char *commands[MAX_LENGTH]; 
   char *args[MAX_LENGTH]; 
 
-  int result, index = 0, end = 0; /* end permet de savoir quand s’arreter */
+  int result, index = 0;
   int my_pipe[2];
 
   /* init pour la gestion du ctrl c */
@@ -50,7 +50,7 @@ int main()
     commands[i] = (char *) calloc(MAX_LENGTH, sizeof(char));
   }
 
-  while (!get_command(commands, '|') && !detect_exit(commands[0]))
+  while (!need_exit && !get_command(commands, '|'))
   {
     while (commands[index] != NULL)
     {
@@ -122,5 +122,5 @@ int main()
     free(commands[i]);
     free(args[i]);
   }
-  return 0;
+  return exit_code;
 }

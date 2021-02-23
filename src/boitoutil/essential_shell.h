@@ -21,10 +21,11 @@
 
 extern pid_t pid;
 extern int exit_code;
+extern int need_exit; /* 0 = pas besoin de sortir, 1 = commande exit appelée */
 
 int native_command(char *command[]);
 void change_dir(char *command[]);
-//void thus_exit(char *command[])
+void thus_exit(char *command[]);
 void ctrl_c_handler();
 void error(int code, int type, char *message);
 

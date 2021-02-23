@@ -17,7 +17,8 @@
 #include <signal.h>
 
 pid_t pid;
-int exit_code;
+int exit_code = 0;
+int need_exit = 0;
 
 /**
  * native_command(): vérifie si la commande entrée par l’utilisateur
@@ -34,9 +35,12 @@ int exit_code;
 int native_command(char *command[])
 {
   int ret = 1; /* 0 si commande non native */
+
   if (!strcmp(command[0], "cd"))
     change_dir(command);
-  if (!strcmp(command[0], "ouï-dire") || !strcmp(command[0], "oui-dire")
+  else if (!strcmp(command[0], "exit"))
+    thus_exit(command);
+  else if (!strcmp(command[0], "ouï-dire") || !strcmp(command[0], "oui-dire")
       || !strcmp(command[0], "echo"))
   {
     char *tmp = calloc(MAX_LENGTH, sizeof(char));
@@ -58,7 +62,9 @@ int native_command(char *command[])
 
 /**
  * change_dir(): fonction pour implémenter la commande cd
- * @dir: le répertoire à ouvrir
+ * @command: la commande passée avec ses arguments
+ *
+ * Structure de la commande cd : cd dossier
  */
 void change_dir(char *command[])
 {
@@ -75,10 +81,21 @@ void change_dir(char *command[])
   }
 }
 
-//void thus_exit(char *command[])
-//{
-//  exit_code = 0;
-//}
+/**
+ * thus_exit(): fonction pour implémenter la commande exit
+ * @command: la commande passée avec ses arguments
+ *
+ * Si l’utilisateur ne met pas d’arguments,
+ * la valeur 0 sera utilisé par défaut.
+ * Cette valeur sera utilisée pour exit_code et
+ * need_exit sera mit à 1.
+ */
+void thus_exit(char *command[])
+{
+  if (command[1] != NULL)
+    exit_code = atoi(command[1]);
+  need_exit = 1;
+}
 
 void ctrl_c_handler()
 {
@@ -94,6 +111,9 @@ void ctrl_c_handler()
  * @type: NON_FATAL_ERROR pour continuer l’exécution
  *        FATAL_ERROR pour stoper le programme
  * @message: message à afficher pour + d’infos ou erreur non implémentée
+ *
+ * En cas d’erreur fatale, le code d’erreur sera mit dans exit_code
+ * et need_exit sera mit à 1.
  */
 void error(int code, int type, char *message)
 {
@@ -133,5 +153,8 @@ void error(int code, int type, char *message)
   }
 
   if (type == FATAL_ERROR)
-    exit(code);
+  {
+    need_exit = 1;
+    exit_code = code;
+  }
 }

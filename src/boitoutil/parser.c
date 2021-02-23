@@ -113,34 +113,3 @@ void parse_string(char *orig, char *dest[], char find)
 
   free(token);
 }
-
-/**
- * detect_exit(): vérifie si la commande entrée est exit
- * @command: la première commande entrée par l’utilisateur
- *
- * Return: 0 si ce n’est pas exit, 1 sinon
- */
-int detect_exit(char *command)
-{
-  /*
-   * TODO c’est dégueulasse, à changer pour un truc plus propre
-   */
-  char *str = malloc(MAX_LENGTH * sizeof(char));
-  strcpy(str, command);
-  char find = ' ';
-  char *token = strtok(str, &find);
-  char *args[MAX_LENGTH];
-  int ret = 0, i = 0;
-  while (token != NULL)
-  {
-    args[i] = token;
-    token = strtok(NULL, &find);
-    i++;
-  }
-
-  if (i == 1 && !strcmp(args[0], "exit"))
-    ret++;
-
-  free(token);
-  return ret;
-}
