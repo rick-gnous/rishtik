@@ -17,6 +17,7 @@
 #include <signal.h>
 
 pid_t pid;
+int exit_code;
 
 /**
  * native_command(): vérifie si la commande entrée par l’utilisateur
@@ -34,7 +35,7 @@ int native_command(char *command[])
 {
   int ret = 1; /* 0 si commande non native */
   if (!strcmp(command[0], "cd"))
-    change_dir(command[1]);
+    change_dir(command);
   if (!strcmp(command[0], "ouï-dire") || !strcmp(command[0], "oui-dire")
       || !strcmp(command[0], "echo"))
   {
@@ -59,16 +60,25 @@ int native_command(char *command[])
  * change_dir(): fonction pour implémenter la commande cd
  * @dir: le répertoire à ouvrir
  */
-void change_dir(char *dir)
+void change_dir(char *command[])
 {
+  char *dir = command[1];
   if (chdir(dir) < 0)
   {
     int code = errno;
-    char txt_error[MAX_LENGTH] = "cd: ";
+    char *txt_error = calloc(MAX_LENGTH, sizeof(char));
+    strcat(txt_error, command[0]);
+    strcat(txt_error, ": ");
     strcat(txt_error, dir);
     error(code, NON_FATAL_ERROR, txt_error);
+    free(txt_error);
   }
 }
+
+//void thus_exit(char *command[])
+//{
+//  exit_code = 0;
+//}
 
 void ctrl_c_handler()
 {
