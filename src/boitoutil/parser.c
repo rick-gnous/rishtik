@@ -103,6 +103,9 @@ void parse_string(char *orig, char *dest[], char find)
     token = strtok(NULL, &find);
   }
 
+  if (pred)
+    i++;
+
   /** le dernier argument doit être NULL
    pour l’utilisation de execvp */
   free(dest[i]);
