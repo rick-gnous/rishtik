@@ -20,9 +20,30 @@ void echo(char *args)
   int i = 0;
   while (tmp != '\0')
   {
-   putchar(tmp);
-   i++;
-   tmp = *(args + i);
+    if (tmp == '$')
+    {
+      i++;
+      i += get_var((args+i), i);
+    }
+    else
+    {
+      putchar(tmp);
+      i++;
+    }
+
+    tmp = *(args + i);
   }
   putchar('\n');
+}
+
+int get_var(char *str, int i)
+{
+  char *tmp = calloc(strlen(str), sizeof(char));
+  strcpy(tmp, str);
+  char f = ' ';
+  char *token = strtok(tmp, &f);
+  printf("%s", getenv(token));
+  int ret = strlen(token);
+  free(tmp);
+  return ret;
 }

@@ -9,5 +9,6 @@
 
 void usage();
 void echo(char *args);
+int get_var(char *str, int i);
 
 #endif
