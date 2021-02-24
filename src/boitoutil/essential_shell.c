@@ -54,6 +54,7 @@ int native_command(char *command[])
     if (i == 2)
       *(tmp + strlen(tmp) - 1) = '\0';
     echo(tmp);
+    free(tmp);
   }
   else
     ret = 0;
