@@ -40,6 +40,8 @@ int native_command(char *command[])
     change_dir(command);
   else if (!strcmp(command[0], "exit"))
     thus_exit(command);
+  else if (!strcmp(command[0], "export"))
+    thus_export(command);
   else if (!strcmp(command[0], "ouï-dire") || !strcmp(command[0], "oui-dire")
       || !strcmp(command[0], "echo"))
   {
@@ -96,6 +98,20 @@ void thus_exit(char *command[])
   if (command[1] != NULL)
     exit_code = atoi(command[1]);
   need_exit = 1;
+}
+
+void thus_export(char *command[])
+{
+  char f = '=';
+  char *token = strtok(command[1], &f);
+  char *var = token;
+  token = strtok(NULL, &f);
+  char *val;
+  if (token == NULL)
+    val = "";
+  else
+    val = token;
+  setenv(var, val, 1);
 }
 
 void ctrl_c_handler()
