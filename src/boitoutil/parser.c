@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 /**
  * get_input(): Permet de récupérer la saisie de l’utilisateur
@@ -20,6 +21,7 @@
  */
 char* get_input()
 {
+  fflush(stdin);
   int stop = 0; /* en cas de ctrl d */
   char *buffer = (char *) calloc(MAX_LENGTH, sizeof(char));
   buffer[0] = '\n';
@@ -27,8 +29,9 @@ char* get_input()
   while (buffer[0] == '\n' && !stop)
   {
     printf("> ");
-    if(fgets(buffer, MAX_LENGTH, stdin) == NULL)
+    if(fgets(buffer, MAX_LENGTH, stdin) == NULL && errno != EINTR)
       stop++;
+    errno = 0; /* réinitialiser le errno pour le prochain fgets */
   }
 
   if (stop)
@@ -111,5 +114,5 @@ void parse_string(char *orig, char *dest[], char find)
   free(dest[i]);
   dest[i] = NULL;
 
-  free(token);
+  //free(token);
 }
