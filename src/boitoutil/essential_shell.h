@@ -27,7 +27,7 @@ int native_command(char *command[]);
 void change_dir(char *command[]);
 void thus_exit(char *command[]);
 void thus_export(char *command[]);
-void ctrl_c_handler();
+void ctrl_c_handler(int signum);
 void error(int code, int type, char *message);
 
 #endif

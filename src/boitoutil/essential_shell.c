@@ -15,8 +15,9 @@
 #include <errno.h>
 //#include <sys/types.h>
 #include <signal.h>
+#include <sys/wait.h>
 
-pid_t pid;
+pid_t pid = 0;
 int exit_code = 0;
 int need_exit = 0;
 
@@ -114,12 +115,10 @@ void thus_export(char *command[])
   setenv(var, val, 1);
 }
 
-void ctrl_c_handler()
+void ctrl_c_handler(int signum)
 {
-  //kill(pid, SIGTERM);
-  //kill(pid, SIGKILL);
-  kill(getpid(), SIGCHLD);
-  printf("\n");
+  while (!waitpid(pid, NULL, WNOHANG)) {}
+  putchar('\n');
 }
 
 /**
